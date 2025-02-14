@@ -1,0 +1,396 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>F&M's Time-Traveling Valentine Adventure</title>
+    <style>
+        :root {
+            --primary: #ff6b8b;
+            --secondary: #845EC2;
+            --accent: #FFC75F;
+            --bg: #2C2F3F;
+            --text: #FBEAFF;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            background: linear-gradient(135deg, var(--bg), #1a1c25);
+            min-height: 100vh;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            color: var(--text);
+            overflow-x: hidden;
+            padding: 20px;
+            position: relative;
+        }
+
+        .welcome-screen {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.95);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 2000;
+            transition: opacity 0.5s ease-out;
+        }
+
+        .welcome-content {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            padding: 2rem;
+            border-radius: 20px;
+            max-width: 90%;
+            width: 600px;
+            text-align: center;
+            animation: fadeIn 1s ease-out;
+        }
+
+        .welcome-content h2 {
+            color: var(--accent);
+            font-size: clamp(1.5rem, 4vw, 2rem);
+            margin-bottom: 1.5rem;
+        }
+
+        .welcome-content p {
+            font-size: clamp(1rem, 3vw, 1.2rem);
+            line-height: 1.6;
+            margin-bottom: 1rem;
+            color: var(--text);
+        }
+
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 1rem;
+            position: relative;
+            text-align: center;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            gap: 1.5rem;
+        }
+
+        .title {
+            font-size: clamp(1.8rem, 5vw, 2.8rem);
+            background: linear-gradient(45deg, var(--primary), var(--accent));
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+            animation: float 3s ease-in-out infinite;
+            text-align: center;
+            padding: 0 10px;
+        }
+
+        .poem-container {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(5px);
+            padding: 2rem;
+            border-radius: 20px;
+            margin: 1rem auto;
+            max-width: 90%;
+            width: 500px;
+            cursor: pointer;
+            transition: all 0.3s ease-in-out;
+            word-break: break-word;
+            display: none;
+            opacity: 0;
+        }
+
+        .poem-container.visible {
+            display: block;
+            opacity: 1;
+        }
+
+        .poem-text {
+            font-size: clamp(1rem, 2.5vw, 1.2rem);
+            line-height: 1.6;
+            margin: 1rem 0;
+        }
+
+        .button {
+            background: var(--primary);
+            color: white;
+            padding: clamp(0.8rem, 2vw, 1rem) clamp(1.5rem, 4vw, 2rem);
+            border-radius: 50px;
+            border: none;
+            font-size: clamp(1rem, 3vw, 1.2rem);
+            cursor: pointer;
+            margin: 1rem;
+            transition: all 0.3s;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+        }
+
+        .button:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 6px 20px rgba(0,0,0,0.3);
+            background: var(--accent);
+        }
+
+        .no-button {
+            background: #ff4757;
+            position: absolute;
+            transition: all 0.2s;
+            z-index: 50;
+        }
+
+        .no-button::after {
+            content: 'Try to catch me if you can! 😏';
+            position: absolute;
+            bottom: -20px;
+            left: 50%;
+            transform: translateX(-50%);
+            white-space: nowrap;
+            font-size: 0.8rem;
+            opacity: 0.8;
+        }
+
+        .message {
+            background: rgba(255,255,255,0.1);
+            backdrop-filter: blur(5px);
+            padding: 1.5rem;
+            border-radius: 20px;
+            margin: 1rem auto;
+            animation: fadeIn 0.5s ease-out;
+            border: 2px solid rgba(255,255,255,0.1);
+            max-width: 90%;
+            word-wrap: break-word;
+        }
+
+        #messageContainer {
+            width: 100%;
+            max-width: 600px;
+            margin: 0 auto;
+        }
+
+        .teddy-container {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            font-size: 3rem;
+            z-index: 100;
+            cursor: pointer;
+            transition: all 0.3s ease-in-out;
+        }
+
+        .teddy-container:hover {
+            animation: wiggle 1s infinite ease-in-out;
+        }
+
+        @keyframes wiggle {
+            0%, 100% { transform: rotate(-5deg) scale(1.2); }
+            50% { transform: rotate(5deg) scale(1.2); }
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-10px); }
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                padding: 1rem;
+                gap: 1rem;
+            }
+
+            .message {
+                padding: 1rem;
+                margin: 0.5rem auto;
+            }
+
+            .button {
+                font-size: 1rem;
+                padding: 0.8rem 1.5rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Welcome Screen -->
+    <div class="welcome-screen" id="welcomeScreen">
+        <div class="welcome-content">
+            <h2>Hey Oulino! 💝</h2>
+            <p>I know Valentine's stuff matters to you, even if it doesn't matter to me. But YOU matter, which is why I want to celebrate us - in our own special way.</p>
+            <p>No ordinary Valentine's celebration for an extraordinary person like you!</p>
+            <button class="button" onclick="startAdventure()">Begin Our Adventure! 🚀</button>
+        </div>
+    </div>
+
+    <div class="container">
+        <h1 class="title">🕰️ The Time Bandits' Valentine Quest 🌟</h1>
+        
+        <div class="poem-container" id="poemContainer">
+            <div class="poem-text">
+                Through time and space, my Oulino bright,<br>
+                Your smile makes every moment just right.<br>
+                Even when you're mad and call me Moulay Fahd L3adama😎,<br>
+                You're still the one who makes my world glow!<br>
+                ~ Your Time-Traveling villain 💫
+            </div>
+        </div>
+        
+        <div id="messageContainer"></div>
+        
+        <button class="button" onclick="startProposal()" id="mainButton">
+            🚀 Meryem! Temporal Anomaly Detected! 🌀
+        </button>
+    </div>
+
+    <div class="teddy-container" onclick="togglePoem()">
+        🧸
+    </div>
+
+    <script>
+        let poemVisible = false;
+        
+        function startAdventure() {
+            const welcomeScreen = document.getElementById('welcomeScreen');
+            welcomeScreen.style.opacity = '0';
+            setTimeout(() => {
+                welcomeScreen.style.display = 'none';
+            }, 500);
+        }
+
+        function togglePoem() {
+            const poemContainer = document.getElementById('poemContainer');
+            poemVisible = !poemVisible;
+            
+            if (poemVisible) {
+                poemContainer.classList.add('visible');
+                createKissEffect();
+            } else {
+                poemContainer.classList.remove('visible');
+            }
+        }
+
+        function createKissEffect() {
+            const teddy = document.querySelector('.teddy-container');
+            const rect = teddy.getBoundingClientRect();
+            
+            const kiss = document.createElement('div');
+            kiss.innerHTML = '💋';
+            kiss.style.position = 'fixed';
+            kiss.style.left = `${rect.left}px`;
+            kiss.style.top = `${rect.top}px`;
+            kiss.style.fontSize = '2rem';
+            kiss.style.transition = 'all 1s ease-out';
+            kiss.style.zIndex = '1000';
+            
+            document.body.appendChild(kiss);
+            
+            setTimeout(() => {
+                kiss.style.transform = 'translate(-50px, -50px) scale(2)';
+                kiss.style.opacity = '0';
+            }, 50);
+            
+            setTimeout(() => kiss.remove(), 1000);
+        }
+
+        function startProposal() {
+            const messages = [
+                "🌟 ATTENTION TIME TRAVELER MERYEM! 🌟",
+                "Your favorite Headache has a special proposal! (Don't throw me out the window yet! 🪟)",
+                "Breaking News: Local scientists confirm your smile powers their research facility! ⚡",
+                "Mission Parameters for our Anti-Valentine Adventure:",
+                "- Dress Code: 'Does not matter' (because we're too cool for regular dates, you look gorgeous with everything) 😎",
+                "- Location: The Anti-Valentine Zone (where normal couples fear to tread Mer9ala probably)",
+                "- Time: When the clock strikes FUN o'clock 🕰️",
+                "Warning: Side effects may include excessive happiness and occasional window-related incidents! 🌈"
+            ];
+
+            const container = document.getElementById('messageContainer');
+            container.innerHTML = '';
+            
+            messages.forEach((msg, index) => {
+                setTimeout(() => {
+                    const messageDiv = document.createElement('div');
+                    messageDiv.className = 'message';
+                    messageDiv.innerHTML = msg;
+                    container.appendChild(messageDiv);
+                    
+                    if (index === messages.length - 1) {
+                        setTimeout(addResponseButtons, 1000);
+                    }
+                }, index * 1000);
+            });
+        }
+
+        function addResponseButtons() {
+            const responseDiv = document.createElement('div');
+            responseDiv.style.marginTop = '2rem';
+            responseDiv.style.position = 'relative';
+            
+            const yesButton = document.createElement('button');
+            yesButton.className = 'button';
+            yesButton.innerHTML = '✨ Accept Mission! ✨';
+            yesButton.onclick = acceptMission;
+            
+            const noButton = document.createElement('button');
+            noButton.className = 'button no-button';
+            noButton.innerHTML = '❌ Decline';
+            noButton.onmouseover = moveButton;
+            
+            responseDiv.appendChild(yesButton);
+            responseDiv.appendChild(noButton);
+            document.getElementById('messageContainer').appendChild(responseDiv);
+        }
+
+        function moveButton(e) {
+            const button = e.target;
+            const container = document.querySelector('.container');
+            const containerRect = container.getBoundingClientRect();
+            
+            // Calculate boundaries
+            const maxX = containerRect.width - button.offsetWidth;
+            const maxY = containerRect.height - button.offsetHeight;
+            
+            // Generate random position within container bounds
+            const newX = Math.max(0, Math.min(Math.random() * maxX, maxX));
+            const newY = Math.max(0, Math.min(Math.random() * maxY, maxY));
+            
+            button.style.position = 'absolute';
+            button.style.left = `${newX}px`;
+            button.style.top = `${newY}px`;
+        }
+
+        function acceptMission() {
+            const container = document.getElementById('messageContainer');
+            container.innerHTML = `
+                <div class="message" style="background: var(--accent); color: var(--bg);">
+                    <h2 style="font-size: 2rem; margin-bottom: 1rem;">🎉 MISSION ACCEPTED! 🎉</h2>
+                    <p style="font-size: 1.2rem; margin-bottom: 1rem;">
+                        Temporal coordinates locked for February 15th!
+                    </p>
+                    <p style="font-size: 1.2rem; margin-bottom: 1rem;">
+                        Dress Code: Black (because we're too cool for regular Valentine's) 😎
+                    </p>
+                    <p style="font-size: 1.2rem;">
+                        Get ready for an adventure that will make regular dates look boring!
+                    </p>
+                    <div style="font-size: 1.5rem; margin-top: 2rem;">
+                        🕰️ F&M's Excellent Adventure Begins! 🚀
+                    </div>
+                </div>
+            `;
+            
+            createKissEffect();
+        }
+    </script>
+</body>
+</html>
